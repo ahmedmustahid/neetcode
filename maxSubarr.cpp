@@ -53,43 +53,31 @@ std::vector<int> readNumbersFromFile(const std::string &filename)
 
 int maxSubArray(vector<int> &nums)
 {
-    vector<int> prevArr{};
-    int prevSum = -std::numeric_limits<int>::max();
+    vector<int> prevArr = vector<int>({nums[0]});
+    int prevSum = nums[0];
 
-    vector<int> globalArr{};
-    int globalMax = -std::numeric_limits<int>::max();
+    vector<int> globalArr = prevArr;
+    int globalSum = prevSum;
 
-    vector<vector<int>> subArrs{};
-    vector<int> newSums{};
-
-    int maxIdx;
-
-    for (size_t i = 0; i < nums.size(); ++i)
+    for (size_t i = 1; i < nums.size(); ++i)
     {
+        vector<int> currArr = vector<int>({nums[i]});
+        int currSum = nums[i];
         prevArr.push_back(nums[i]);
-        subArrs.push_back(prevArr);
-        subArrs.push_back(vector<int>({nums[i]}));
-
-        prevSum += nums[i];
-        newSums.push_back(prevSum);
-        newSums.push_back(nums[i]);
-
-        maxIdx = newSums[0] > newSums[1] ? 0 : 1;
-
-        if (newSums[maxIdx] > globalMax)
+        prevSum += currSum;
+        if (currSum > prevSum)
         {
-            globalMax = newSums[maxIdx];
-            globalArr = subArrs[maxIdx];
+            prevSum = std::move(currSum);
+            prevArr = std::move(currArr);
         }
-
-        prevArr = subArrs[maxIdx];
-        prevSum = newSums[maxIdx];
-
-        subArrs.clear();
-        newSums.clear();
+        if (prevSum > globalSum)
+        {
+            globalSum = prevSum;
+            globalArr = prevArr;
+        }
     }
     printVec(globalArr);
-    return globalMax;
+    return globalSum;
 }
 
 int main()
